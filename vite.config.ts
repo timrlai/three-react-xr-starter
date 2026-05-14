@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import basicSsl from "@vitejs/plugin-basic-ssl";
 import glsl from "vite-plugin-glsl";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+import viteCompression from "vite-plugin-compression";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -89,5 +90,6 @@ export default defineConfig({
       cache: false,
       cacheLocation: undefined,
     }),
+    viteCompression(),
   ],
 });
