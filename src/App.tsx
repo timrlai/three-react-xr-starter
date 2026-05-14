@@ -1,6 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { XR, createXRStore } from "@react-three/xr";
 import { useState } from "react";
+import Draggable from "./Draggable";
 
 const store = createXRStore();
 
@@ -14,14 +15,15 @@ export default function App() {
       </nav>
       <Canvas>
         <XR store={store}>
-          <mesh
-            pointerEventsType={{ deny: "grab" }}
-            onClick={() => setRed(!red)}
-            position={[0, 1, -1]}
-          >
-            <boxGeometry />
-            <meshBasicMaterial color={red ? "red" : "blue"} />
-          </mesh>
+          <Draggable position={[0, 1, -2]}>
+            <mesh
+              pointerEventsType={{ deny: "grab" }}
+              onClick={() => setRed(!red)}
+            >
+              <boxGeometry />
+              <meshBasicMaterial color={red ? "red" : "blue"} />
+            </mesh>
+          </Draggable>
         </XR>
       </Canvas>
     </main>
