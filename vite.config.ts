@@ -92,4 +92,24 @@ export default defineConfig({
     }),
     viteCompression(),
   ],
+  build: {
+    minify: "esbuild",
+    cssMinify: "esbuild",
+    cssCodeSplit: true,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "large-libs",
+              test: /node_modules/,
+              minSize: 100000, // 100KB
+              maxSize: 250000, // 250KB
+              priority: 10,
+            },
+          ],
+        },
+      },
+    },
+  },
 });
