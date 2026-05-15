@@ -1,12 +1,16 @@
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { XR, createXRStore } from "@react-three/xr";
-import { useState } from "react";
+import { Box3 } from "three";
+import Intersectable from "./Intersectable";
 import Draggable from "./Draggable";
 
 const store = createXRStore();
 
 export default function App() {
+  const [box, setBox] = useState<Box3 | null>(null);
   const [red, setRed] = useState(false);
+
   return (
     <main>
       <nav id="xr-button-container">
@@ -15,13 +19,20 @@ export default function App() {
       </nav>
       <Canvas>
         <XR store={store}>
-          <Draggable position={[0, 1, -2]}>
-            <mesh
-              pointerEventsType={{ deny: "grab" }}
-              onClick={() => setRed(!red)}
-            >
+          <Intersectable
+            position={[-2, 1, -1]}
+            box={box}
+            onIntersect={() => setRed(true)}
+          >
+            <mesh>
               <boxGeometry />
               <meshBasicMaterial color={red ? "red" : "blue"} />
+            </mesh>
+          </Intersectable>
+          <Draggable position={[2, 1, -1]} onDragged={(box) => setBox(box)}>
+            <mesh>
+              <boxGeometry />
+              <meshBasicMaterial color="red" />
             </mesh>
           </Draggable>
         </XR>
