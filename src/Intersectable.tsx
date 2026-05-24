@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useRef, type JSX } from "react";
+import { type JSX, useEffect, useRef } from "react";
 import { type Mesh, Box3 } from "three";
 
 type IntersectableProps = {
