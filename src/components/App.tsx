@@ -15,7 +15,12 @@ export default function App() {
     <main>
       <nav id="xr-button-container">
         {/* <button onClick={() => store.enterAR()}>Enter AR</button> */}
-        <button onClick={() => store.enterVR()}>Enter VR</button>
+        <button
+          onClick={() => store.enterVR()}
+          className="special-gothic-condensed-one-regular"
+        >
+          Enter VR
+        </button>
       </nav>
       <Canvas>
         <XR store={store}>
