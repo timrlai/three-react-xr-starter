@@ -1,5 +1,7 @@
-import { type JSX, useRef } from "react";
-import { type Group, Box3, Plane, Vector3 } from "three";
+import { type JSX, useRef, useState } from "react";
+import { type Group, Box3 } from "three";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useXRInputSourceState } from "@react-three/xr";
 
 type DraggableProps = {
   position?: [number, number, number];
@@ -12,32 +14,39 @@ export default function Draggable({
   children,
   onDragged,
 }: DraggableProps) {
-  const isDraggingRef = useRef(false);
   const groupRef = useRef<Group>(null);
+  const boundingBox = useRef<Box3>(null);
+  const [isGrabbed, setIsGrabbed] = useState(false);
+  const controller = useXRInputSourceState("controller", "right");
+  const { scene } = useThree();
 
-  const intersectedPlane = new Plane(new Vector3(0, 0, 1), 1);
-  const targetPosition = new Vector3();
+  const grab = () => {
+    if (controller?.object && groupRef.current) {
+      controller.object.attach(groupRef.current);
+      setIsGrabbed(true);
+    }
+  };
+
+  const release = () => {
+    if (isGrabbed && groupRef.current) {
+      scene.attach(groupRef.current);
+      setIsGrabbed(false);
+    }
+  };
+
+  useFrame(() => {
+    if (isGrabbed && groupRef.current && boundingBox.current && onDragged) {
+      const box = boundingBox.current.clone();
+      box.applyMatrix4(groupRef.current.matrixWorld);
+      onDragged(box);
+    }
+  });
 
   return (
     <group
       ref={groupRef}
-      onPointerDown={(e) => {
-        isDraggingRef.current = true;
-        e.ray.intersectPlane(intersectedPlane, targetPosition);
-        groupRef.current?.position.copy(targetPosition);
-      }}
-      onPointerMove={(e) => {
-        if (!isDraggingRef.current) return;
-        e.ray.intersectPlane(intersectedPlane, targetPosition);
-        groupRef.current?.position.copy(targetPosition);
-
-        if (groupRef.current && onDragged) {
-          groupRef.current.updateWorldMatrix(true, false);
-          const box = new Box3().setFromObject(groupRef.current);
-          onDragged(box);
-        }
-      }}
-      onPointerUp={() => (isDraggingRef.current = false)}
+      onPointerDown={grab}
+      onPointerUp={release}
       position={position}
     >
       {children}
